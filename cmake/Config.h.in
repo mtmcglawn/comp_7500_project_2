@@ -2,3 +2,4 @@
 #define Project_2_VERSION_MAJOR @Project_2_VERSION_MAJOR@
 #define Project_2_VERSION_MINOR @Project_2_VERSION_MINOR@
 #define Project_2_VERSION_PATCH @Project_2_VERSION_PATCH@
+#define VERSION_MAX_SIZE 10

@@ -27,7 +27,9 @@ configure_file(${CMAKE_DIR}/Config.h.in ${CMAKE_DIR}/Config.h)
 #######################################
 # Allow testing
 #######################################
-enable_testing()
+if(ENABLE_TESTS)
+	enable_testing()
+endif()
 
 
 #######################################
