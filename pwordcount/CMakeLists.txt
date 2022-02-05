@@ -39,7 +39,7 @@ include_directories(${COMMON_INCLUDES} ${${CURRENT_DIR}_INC}
 #######################################
 # Source files
 #######################################
- file(GLOB SRC_FILES ${${CURRENT_DIR}_DIR}/*.c)
+file(GLOB SRC_FILES ${${CURRENT_DIR}_DIR}/*.c)
 #set(SRC_FILES ${${CURRENT_DIR}_DIR}/${CLASS_NAME}.c
 	#Add additional required .c files here
 	#)
@@ -81,7 +81,7 @@ if(ENABLE_TESTS)
 	
 	# Include the gtest library. gtest_SOURCE_DIR is available due to
 	# including the googletest external directory.
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+  include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 	
 	
 	#######################################
