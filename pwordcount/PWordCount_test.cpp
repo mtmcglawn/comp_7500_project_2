@@ -1,53 +1,87 @@
 #include <iostream>
 #include "gtest/gtest.h"
 extern "C" {
-  #include "PWordCount.h"
+#include "PWordCount.h"
 }
 
 using namespace std;
 
-struct PWordCountTest : public testing::Test {
-	//std::string output;
-	void SetUp() {
-    /*
-    PWordCount();
-		std::stringstream ss;
-		ss << "Hello World\n"
-			<< "Version: "
-			<< Project_2_VERSION_MAJOR << "."
-			<< Project_2_VERSION_MINOR << "."
-			<< Project_2_VERSION_PATCH;
-		output = ss.str();
-    */
-	}
-	void TearDown() {}
+struct PWordCountEmptyInputTest : public testing::Test {
+  int inputCount;
+  char* input[MAX_BUFFER_SIZE];
+  void SetUp() {
+    inputCount = 0;
+  }
+  void TearDown() {}
 };
-	
+
+struct DISABLED_PWordCountOneInputFileDoesNotExistTest : public testing::Test {
+  int inputCount;
+  char* input[MAX_BUFFER_SIZE];
+  void SetUp() {
+    inputCount = 1;
+    char hello[] = "Hello";
+    input[0] = hello;
+  }
+  void TearDown() {}
+};
+
+struct DISABLED_PWordCountOneInputFileDoesExistTest : public testing::Test {
+  int inputCount;
+  char* input[MAX_BUFFER_SIZE];
+  void SetUp() {
+    inputCount = 1;
+    char hello[] = "Hello";
+    input[0] = hello;
+  }
+  void TearDown() {}
+};
+
+struct DISABLED_PWordCountTwoInputTest : public testing::Test {
+  int inputCount;
+  char* input[MAX_BUFFER_SIZE];
+  void SetUp() {
+    inputCount = 2;
+    char hello[] = "Hello";
+    char world[] = "World";
+    input[0] = hello;
+    input[1] = world;
+  }
+  void TearDown() {}
+};
+
 TEST(PWordCount, DoesAssertWork){
-	ASSERT_TRUE(1 == 1);
+  ASSERT_TRUE(1 == 1);
 }
 
-TEST(PWordCount, PWordCountReturnsInt){
-	ASSERT_EQ(typeid(pWordCount()), typeid(int));
+TEST_F(PWordCountEmptyInputTest, PWordCountReturnsInt){
+  testing::internal::CaptureStdout();
+  ASSERT_EQ(typeid(pWordCount(inputCount, input)), typeid(int));
+  std::string output = testing::internal::GetCapturedStdout();
 }
 
-TEST(PWordCountTest, PWordCountReturnsZero){
-  ASSERT_EQ(pWordCount(), 0);
-}
-/*
-TEST_F(PWordCountTest, PWordCountPrintReturnsChar){
-	ASSERT_EQ(typeid(getString()), typeid(char*));
+TEST_F(PWordCountEmptyInputTest, PWordCountEmptyInputReturnsZero){
+  testing::internal::CaptureStdout();
+  ASSERT_EQ(pWordCount(inputCount, input), 1);
+  std::string output = testing::internal::GetCapturedStdout();
 }
 
-TEST_F(PWordCountTest, PWordCountPrintReturnsCorrectString){
-	ASSERT_STREQ(getString(), output.c_str());
+TEST_F(DISABLED_PWordCountOneInputFileDoesNotExistTest, PWordCountEmptyInputReturnsZero){
+  ASSERT_EQ(pWordCount(inputCount, input), 1);
 }
-*/
+
+TEST_F(DISABLED_PWordCountOneInputFileDoesExistTest, PWordCountEmptyInputReturnsZero){
+  ASSERT_EQ(pWordCount(inputCount, input), 0);
+}
+
+TEST_F(DISABLED_PWordCountTwoInputTest, PWordCountEmptyInputReturnsZero){
+  ASSERT_EQ(pWordCount(inputCount, input), 0);
+}
 
 
 int main(int argc, char **argv) {
 
-	testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest(&argc, argv);
 
-	return RUN_ALL_TESTS();
+  return RUN_ALL_TESTS();
 }

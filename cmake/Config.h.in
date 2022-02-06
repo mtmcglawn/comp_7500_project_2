@@ -3,3 +3,6 @@
 #define Project_2_VERSION_MINOR @Project_2_VERSION_MINOR@
 #define Project_2_VERSION_PATCH @Project_2_VERSION_PATCH@
 #define VERSION_MAX_SIZE 10
+#define MAX_BUFFER_SIZE 1000
+#define READ_END 0
+#define WRITE_END 1

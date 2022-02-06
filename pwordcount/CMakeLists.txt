@@ -62,13 +62,13 @@ add_library(${CLASS_NAME}_lib ${SRC_FILES})
 #######################################
 # Main is separate (e.g., library client)
 #######################################
-add_executable(${EXE_NAME}.exe ${${CURRENT_DIR}_DIR}/${DRIVER_NAME}.c)
+add_executable(${EXE_NAME} ${${CURRENT_DIR}_DIR}/${DRIVER_NAME}.c)
 
 
 #######################################
 # linking Main against the library
 #######################################
-target_link_libraries(${EXE_NAME}.exe ${CLASS_NAME}_lib)
+target_link_libraries(${EXE_NAME} ${CLASS_NAME}_lib)
 
 
 if(ENABLE_TESTS)

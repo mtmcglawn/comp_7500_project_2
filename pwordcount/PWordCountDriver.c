@@ -1,16 +1,35 @@
 #include "PWordCount.h"
 
 
-int main(int, char *[]) {
-  return pWordCount();
-}
 /*
-int main(int, char* []) {
-  int version_size = 3 * VERSION_MAX_SIZE;
-  char words[100 + version_size];
-  PWordCount();
-  strcpy(words, getString());
-  printf("%s", words);
-  return 0;
+ * COMP 7500/001
+ * Matthew Tyler McGlawn
+ * Auburn University
+ *
+ * COMPILE
+ *
+ * 2 ways:
+ * 1: $ ./build.sh
+ * 2: $ mkdir build && cd build && cmake .. && cmake --build .
+ *
+ * Either way may be used
+ * 
+ *
+ * TESTS
+ *
+ * To run tests in any directory with source code:
+ * - googletest must be located in repository - run
+ *
+ *   `git submodule update --init`
+ *
+ *    to clone googletest into appropriate location
+ *
+ * First build, then either:
+ * 1. $ cd build && ctest
+ * 2. $ ./build.sh test
+ */
+
+
+int main(int argc, char *argv[]) {
+  return pWordCount(argc, argv);
 }
-*/
