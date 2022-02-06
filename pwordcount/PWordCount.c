@@ -2,6 +2,10 @@
 #include "PWordCount.h"
 
 
+int pWordCount() {
+  return 0;
+}
+/*
 void PWordCount(){
   char hello[] = "Hello World\nVersion: ";
   int major = Project_2_VERSION_MAJOR;
@@ -14,3 +18,4 @@ char* getString(){
   printf(output);
   return output;
 }
+*/

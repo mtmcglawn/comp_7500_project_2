@@ -7,11 +7,14 @@
 #include "Config.h"
 
 
+int pWordCount();
+/*
 void PWordCount();
 char* getString();
 
 #ifdef _PWORD_COUNT_C
 static char output[150];
 #endif
+*/
 
 #endif
