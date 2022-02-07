@@ -2,6 +2,7 @@
 #define _PWORD_COUNT_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>

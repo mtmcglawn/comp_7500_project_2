@@ -17,3 +17,9 @@ endif()
 if(NOT ${CMAKE_SOURCE_DIR} STREQUAL ${BASE_DIR})
 	add_subdirectory(${EXTERNAL_DEPS_DIR} ${BUILD_DIR}/external)
 endif()
+
+
+#######################################
+# add the configure file
+#######################################
+configure_file(${CMAKE_DIR}/Config.h.in ${CMAKE_DIR}/Config.h)

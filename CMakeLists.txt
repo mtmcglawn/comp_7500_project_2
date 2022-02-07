@@ -19,12 +19,6 @@ include(${BASE_DIR}/cmake/cmake_includes.cmake)
 
 
 #######################################
-# add the configure file
-#######################################
-configure_file(${CMAKE_DIR}/Config.h.in ${CMAKE_DIR}/Config.h)
-
-
-#######################################
 # Allow testing
 #######################################
 if(ENABLE_TESTS)

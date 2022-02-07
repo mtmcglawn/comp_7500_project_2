@@ -41,7 +41,7 @@ int pWordCount(int argc, char *argv[])
   }
   else if (argc == 2)
   {
-    char write_msg[MAX_BUFFER_SIZE] = "Greetings";
+    char write_msg[MAX_BUFFER_SIZE];
     char read_msg[MAX_BUFFER_SIZE];
     pid_t pid;
     int pipe_descriptor[2];
@@ -58,10 +58,6 @@ int pWordCount(int argc, char *argv[])
     }
     if (pid > 0)
     {
-      close(pipe_descriptor[READ_END]);
-      write(pipe_descriptor[WRITE_END], write_msg, strlen(write_msg) + 1);
-      close(pipe_descriptor[WRITE_END]);
-      /*
       char *file_name =argv[1];
       FILE *input_file = fopen(file_name, "r");
       if (!input_file)
@@ -71,14 +67,32 @@ int pWordCount(int argc, char *argv[])
       }
       else
       {
+        int buffer_index = 0;
+        close(pipe_descriptor[READ_END]);
+        while ((write_msg[buffer_index] = fgetc(input_file)) != EOF)
+        {
+          if (buffer_index == MAX_BUFFER_SIZE - 2)
+          {
+            write(pipe_descriptor[WRITE_END], write_msg, strlen(write_msg) + 1);
+            memset(write_msg, 0, sizeof write_msg);
+            buffer_index = -1;
+          }
+          buffer_index++;
+        }
+        write_msg[buffer_index] = '\0';
+        write(pipe_descriptor[WRITE_END], write_msg, buffer_index + 1);
+        close(pipe_descriptor[WRITE_END]);
+        fclose(input_file);
       }
-      */
     }
     else
     {
+      int byte_size = 0;
       close(pipe_descriptor[WRITE_END]);
-      read(pipe_descriptor[READ_END], read_msg, MAX_BUFFER_SIZE);
-      fprintf(stdout, "child read %s\n", read_msg);
+      while ((byte_size = read(pipe_descriptor[READ_END], read_msg, MAX_BUFFER_SIZE)) > 0)
+      {
+        fprintf(stdout, read_msg);
+      }
       close(pipe_descriptor[READ_END]);
     }
   }
@@ -89,17 +103,3 @@ int pWordCount(int argc, char *argv[])
   }
   return 0;
 }
-/*
-void PWordCount(){
-  char hello[] = "Hello World\nVersion: ";
-  int major = Project_2_VERSION_MAJOR;
-  int minor = Project_2_VERSION_MINOR;
-  int patch = Project_2_VERSION_PATCH;
-  sprintf(output, "%s%d.%d.%d", hello, major, minor, patch);
-}
-
-char* getString(){
-  fprintf(stdout, output);
-  return output;
-}
-*/
