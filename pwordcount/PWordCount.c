@@ -41,11 +41,14 @@ int pWordCount(int argc, char *argv[])
   }
   else if (argc == 2)
   {
-    char write_msg[MAX_BUFFER_SIZE];
-    char read_msg[MAX_BUFFER_SIZE];
+    char parent_write_msg[MAX_BUFFER_SIZE];
+    char child_write_msg[MAX_BUFFER_SIZE];
+    char child_read_msg[MAX_BUFFER_SIZE];
+    char parent_read_msg[MAX_BUFFER_SIZE];
     pid_t pid;
-    int pipe_descriptor[2];
-    if  (pipe(pipe_descriptor) == -1)
+    int parent_to_child_pipe[2];
+    int child_to_parent_pipe[2];
+    if (pipe(parent_to_child_pipe) == -1 || pipe(child_to_parent_pipe) == -1)
     {
       fprintf(stderr, "Pipe creation failed");
       return 1;
@@ -60,6 +63,7 @@ int pWordCount(int argc, char *argv[])
     {
       char *file_name =argv[1];
       FILE *input_file = fopen(file_name, "r");
+      fprintf(stdout, "Process 1 is reading file \"%s\" now...\n", file_name);
       if (!input_file)
       {
         fprintf(stderr, "Can not open file\n");
@@ -67,33 +71,71 @@ int pWordCount(int argc, char *argv[])
       }
       else
       {
-        int buffer_index = 0;
-        close(pipe_descriptor[READ_END]);
-        while ((write_msg[buffer_index] = fgetc(input_file)) != EOF)
+        int parent_send_buffer_index = 0;
+        fprintf(stdout, "Process 1 starts sending data to Process 2...\n");
+        close(parent_to_child_pipe[READ_END]);
+        while ((parent_write_msg[parent_send_buffer_index] = fgetc(input_file)) != EOF)
         {
-          if (buffer_index == MAX_BUFFER_SIZE - 2)
+          if (parent_send_buffer_index == MAX_BUFFER_SIZE - 2)
           {
-            write(pipe_descriptor[WRITE_END], write_msg, strlen(write_msg) + 1);
-            memset(write_msg, 0, sizeof write_msg);
-            buffer_index = -1;
+            write(parent_to_child_pipe[WRITE_END], parent_write_msg, strlen(parent_write_msg) + 1);
+            memset(parent_write_msg, 0, sizeof parent_write_msg);
+            parent_send_buffer_index = -1;
           }
-          buffer_index++;
+          parent_send_buffer_index++;
         }
-        write_msg[buffer_index] = '\0';
-        write(pipe_descriptor[WRITE_END], write_msg, buffer_index + 1);
-        close(pipe_descriptor[WRITE_END]);
+        parent_write_msg[parent_send_buffer_index] = '\0';
+        write(parent_to_child_pipe[WRITE_END], parent_write_msg, parent_send_buffer_index + 1);
+        close(parent_to_child_pipe[WRITE_END]);
         fclose(input_file);
+        wait(NULL);
+        close(child_to_parent_pipe[WRITE_END]);
+        int child_message_size = 0;
+        while ((child_message_size = read(child_to_parent_pipe[READ_END], child_read_msg, MAX_BUFFER_SIZE)) > 0)
+        {
+          fprintf(stdout, "Process 1: The total number of words is %s\n", child_read_msg);
+        }
+        close(child_to_parent_pipe[READ_END]);
       }
     }
     else
     {
-      int byte_size = 0;
-      close(pipe_descriptor[WRITE_END]);
-      while ((byte_size = read(pipe_descriptor[READ_END], read_msg, MAX_BUFFER_SIZE)) > 0)
+      int parent_message_size = 0;
+      close(parent_to_child_pipe[WRITE_END]);
+      int words = 0;
+      while ((parent_message_size = read(parent_to_child_pipe[READ_END], child_read_msg, MAX_BUFFER_SIZE)) > 0)
       {
-        fprintf(stdout, read_msg);
+        bool isLetter = false;
+        for (int child_buffer_index = 0; child_buffer_index < MAX_BUFFER_SIZE; child_buffer_index++)
+        {
+          if (child_read_msg[child_buffer_index] == ' ')
+          {
+            isLetter = false;
+          }
+          else
+          {
+            if (!isLetter)
+            {
+              words++;
+            }
+            isLetter = true;
+          }
+        }
       }
-      close(pipe_descriptor[READ_END]);
+      fprintf(stdout, "%d\n", words);
+      close(parent_to_child_pipe[READ_END]);
+      fprintf(stdout, "Process 2 finishes receiving data from Process 1...\n");
+      fprintf(stdout, "Process 2 is counting words now...\n");
+      char words_as_string[MAX_BUFFER_SIZE];
+      sprintf(words_as_string, "%d", words);
+      close(child_to_parent_pipe[READ_END]);
+      fprintf(stdout, "Process 2 is sending the result back to Process 1...\n");
+      for (int child_send_buffer_index = 0; child_send_buffer_index < strlen(words_as_string); child_send_buffer_index++)
+      {
+        child_write_msg[child_send_buffer_index] = words_as_string[child_send_buffer_index];
+      }
+      write(child_to_parent_pipe[WRITE_END], child_write_msg, strlen(child_write_msg) + 1);
+      close(child_to_parent_pipe[WRITE_END]);
     }
   }
   else
