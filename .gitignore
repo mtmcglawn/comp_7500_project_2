@@ -59,3 +59,6 @@ Project 2-Specification.pdf
 
 # Config Header
 cmake/Config.h
+
+# Vim session
+pwordcount.vim

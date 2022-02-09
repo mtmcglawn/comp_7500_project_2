@@ -33,6 +33,7 @@
 
 int pWordCount(int argc, char *argv[])
 {
+  int ret_val = 0;
   if (argc == 1)
   {
     fprintf(stderr, "Please enter a file name.\n");
@@ -61,42 +62,11 @@ int pWordCount(int argc, char *argv[])
     }
     if (pid > 0)
     {
-      char *file_name =argv[1];
-      FILE *input_file = fopen(file_name, "r");
-      fprintf(stdout, "Process 1 is reading file \"%s\" now...\n", file_name);
-      if (!input_file)
-      {
-        fprintf(stderr, "Can not open file\n");
-        return 1;
-      }
-      else
-      {
-        int parent_send_buffer_index = 0;
-        fprintf(stdout, "Process 1 starts sending data to Process 2...\n");
-        close(parent_to_child_pipe[READ_END]);
-        while ((parent_write_msg[parent_send_buffer_index] = fgetc(input_file)) != EOF)
-        {
-          if (parent_send_buffer_index == MAX_BUFFER_SIZE - 2)
-          {
-            write(parent_to_child_pipe[WRITE_END], parent_write_msg, strlen(parent_write_msg) + 1);
-            memset(parent_write_msg, 0, sizeof parent_write_msg);
-            parent_send_buffer_index = -1;
-          }
-          parent_send_buffer_index++;
-        }
-        parent_write_msg[parent_send_buffer_index] = '\0';
-        write(parent_to_child_pipe[WRITE_END], parent_write_msg, parent_send_buffer_index + 1);
-        close(parent_to_child_pipe[WRITE_END]);
-        fclose(input_file);
-        wait(NULL);
-        close(child_to_parent_pipe[WRITE_END]);
-        int child_message_size = 0;
-        while ((child_message_size = read(child_to_parent_pipe[READ_END], child_read_msg, MAX_BUFFER_SIZE)) > 0)
-        {
-          fprintf(stdout, "Process 1: The total number of words is %s\n", child_read_msg);
-        }
-        close(child_to_parent_pipe[READ_END]);
-      }
+      ret_val = parent(argv[1],
+                       parent_to_child_pipe,
+                       child_to_parent_pipe,
+                       parent_write_msg,
+                       child_read_msg);
     }
     else
     {
@@ -122,7 +92,6 @@ int pWordCount(int argc, char *argv[])
           }
         }
       }
-      fprintf(stdout, "%d\n", words);
       close(parent_to_child_pipe[READ_END]);
       fprintf(stdout, "Process 2 finishes receiving data from Process 1...\n");
       fprintf(stdout, "Process 2 is counting words now...\n");
@@ -143,5 +112,5 @@ int pWordCount(int argc, char *argv[])
     fprintf(stderr, "Usage: ./pwordcount <file_name>\n");
     return 1;
   }
-  return 0;
+  return ret_val;
 }

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
+include_guard(GLOBAL)
 
 #######################################
 # Project setup
@@ -31,4 +32,7 @@ endif()
 #######################################
 add_subdirectory(${EXTERNAL_DEPS_DIR})
 
+#######################################
+# Add Subdirectories
+#######################################
 add_subdirectory(${PWORD_COUNT_DIR})

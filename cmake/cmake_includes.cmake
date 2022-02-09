@@ -1,5 +1,11 @@
+include_guard(GLOBAL)
+
+#######################################
+# Add Common settings to all
+#######################################
 include(${BASE_DIR}/cmake/paths.cmake)
 include(${CMAKE_DIR}/includes.cmake)
+include(${CMAKE_DIR}/libraries.cmake)
 include(${CMAKE_DIR}/compiler.cmake)
 
 

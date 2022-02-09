@@ -1,14 +1,3 @@
-#ifndef _PWORD_COUNT_H
-#define _PWORD_COUNT_H
-
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
-#include "Config.h"
 #include "Parent.h"
 
 
@@ -41,16 +30,20 @@
  */
 
 
-int pWordCount(int  argc,
-               char *argv[]);
-
-/*
-void PWordCount();
-char* getString();
-
-#ifdef _PWORD_COUNT_C
-static char output[150];
-#endif
-*/
-
-#endif
+int main(int argc, char *argv[]) {
+  char *file_name = "Parent.h";
+  int to_child_pipe[2];
+  int from_child_pipe[2];
+  char write_msg[MAX_BUFFER_SIZE];
+  char read_msg[MAX_BUFFER_SIZE];
+  if (pipe(to_child_pipe) == -1 || pipe(from_child_pipe) == -1)
+  {
+    fprintf(stderr, "Pipe creation failed");
+    return 1;
+  }
+  return parent(file_name,
+      to_child_pipe,
+      from_child_pipe,
+      write_msg,
+      read_msg);
+}
