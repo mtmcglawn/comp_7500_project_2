@@ -35,6 +35,13 @@ endif()
 
 
 #######################################
+# Add other directories
+#######################################
+if(${CMAKE_SOURCE_DIR} STREQUAL ${${CURRENT_DIR}_INC})
+endif()
+
+
+#######################################
 # Define include directories
 #######################################
 include_directories(${COMMON_INCLUDES} ${${CURRENT_DIR}_INC}

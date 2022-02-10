@@ -32,9 +32,17 @@ endif()
 #######################################
 # Add Subdirectories
 #######################################
-
 add_subdirectory(${PARENT_DIR})
 add_subdirectory(${CHILD_DIR})
+add_subdirectory(${PIPELINING_DIR})
+
+
+#######################################
+# Add other directories
+#######################################
+if(${CMAKE_SOURCE_DIR} STREQUAL ${${CURRENT_DIR}_INC})
+endif()
+
 
 #######################################
 # Define include directories
@@ -43,6 +51,7 @@ include_directories(${COMMON_INCLUDES} ${${CURRENT_DIR}_INC}
 	#Add additional required .h files here
   ${PARENT_DIR}
   ${CHILD_DIR}
+  ${PIPELINING_DIR}
 	)
 
 
@@ -73,8 +82,7 @@ add_library(${CLASS_NAME}_lib SHARED ${SRC_FILES})
 # linking the library
 #######################################
 target_link_libraries(${CLASS_NAME}_lib PUBLIC
-  ${PARENT_LIB}
-  ${CHILD_LIB}
+  ${PIPELINING_LIB}
   )
 
 

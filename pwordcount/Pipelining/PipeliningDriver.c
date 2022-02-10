@@ -1,6 +1,3 @@
-#ifndef _PWORD_COUNT_H
-#define _PWORD_COUNT_H
-
 #include "Pipelining.h"
 
 
@@ -33,10 +30,6 @@
  */
 
 
-int pWordCount(int  argc,
-               char *argv[]);
-
-int printBadInputs();
-
-
-#endif
+int main(int argc, char *argv[]) {
+  return 0;
+}
