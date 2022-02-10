@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.22)
 include_guard(GLOBAL)
 
-set(CURRENT_DIR PWORD_COUNT)
-set(CLASS_NAME PWordCount)
+set(CURRENT_DIR CHILD)
+set(CLASS_NAME Child)
 set(DRIVER_NAME ${CLASS_NAME}Driver)
-set(EXE_NAME pwordcount)
+set(EXE_NAME child)
 
 
 if (NOT ${CMAKE_SOURCE_DIR})
@@ -33,16 +33,12 @@ endif()
 # Add Subdirectories
 #######################################
 
-add_subdirectory(${PARENT_DIR})
-add_subdirectory(${CHILD_DIR})
 
 #######################################
 # Define include directories
 #######################################
 include_directories(${COMMON_INCLUDES} ${${CURRENT_DIR}_INC}
 	#Add additional required .h files here
-  ${PARENT_DIR}
-  ${CHILD_DIR}
 	)
 
 
@@ -72,10 +68,7 @@ add_library(${CLASS_NAME}_lib SHARED ${SRC_FILES})
 #######################################
 # linking the library
 #######################################
-target_link_libraries(${CLASS_NAME}_lib PUBLIC
-  ${PARENT_LIB}
-  ${CHILD_LIB}
-  )
+#target_link_libraries(${CLASS_NAME}_lib PUBLIC)
 
 
 #######################################

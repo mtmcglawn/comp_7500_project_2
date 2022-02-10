@@ -70,41 +70,10 @@ int pWordCount(int argc, char *argv[])
     }
     else
     {
-      int parent_message_size = 0;
-      close(parent_to_child_pipe[WRITE_END]);
-      int words = 0;
-      while ((parent_message_size = read(parent_to_child_pipe[READ_END], child_read_msg, MAX_BUFFER_SIZE)) > 0)
-      {
-        bool isLetter = false;
-        for (int child_buffer_index = 0; child_buffer_index < MAX_BUFFER_SIZE; child_buffer_index++)
-        {
-          if (child_read_msg[child_buffer_index] == ' ')
-          {
-            isLetter = false;
-          }
-          else
-          {
-            if (!isLetter)
-            {
-              words++;
-            }
-            isLetter = true;
-          }
-        }
-      }
-      close(parent_to_child_pipe[READ_END]);
-      fprintf(stdout, "Process 2 finishes receiving data from Process 1...\n");
-      fprintf(stdout, "Process 2 is counting words now...\n");
-      char words_as_string[MAX_BUFFER_SIZE];
-      sprintf(words_as_string, "%d", words);
-      close(child_to_parent_pipe[READ_END]);
-      fprintf(stdout, "Process 2 is sending the result back to Process 1...\n");
-      for (int child_send_buffer_index = 0; child_send_buffer_index < strlen(words_as_string); child_send_buffer_index++)
-      {
-        child_write_msg[child_send_buffer_index] = words_as_string[child_send_buffer_index];
-      }
-      write(child_to_parent_pipe[WRITE_END], child_write_msg, strlen(child_write_msg) + 1);
-      close(child_to_parent_pipe[WRITE_END]);
+      ret_val = child(child_to_parent_pipe,
+                      child_to_parent_pipe,
+                      child_write_msg,
+                      parent_read_msg);
     }
   }
   else

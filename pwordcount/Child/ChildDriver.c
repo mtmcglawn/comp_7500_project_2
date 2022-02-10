@@ -1,14 +1,3 @@
-#ifndef _PWORD_COUNT_H
-#define _PWORD_COUNT_H
-
-//#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
-#include "Config.h"
-#include "Parent.h"
 #include "Child.h"
 
 
@@ -41,16 +30,6 @@
  */
 
 
-int pWordCount(int  argc,
-               char *argv[]);
-
-/*
-void PWordCount();
-char* getString();
-
-#ifdef _PWORD_COUNT_C
-static char output[150];
-#endif
-*/
-
-#endif
+int main(int argc, char *argv[]) {
+  return 0;
+}

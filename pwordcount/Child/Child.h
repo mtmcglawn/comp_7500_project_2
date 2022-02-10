@@ -1,15 +1,14 @@
-#ifndef _PWORD_COUNT_H
-#define _PWORD_COUNT_H
+#ifndef _CHILD_H
+#define _CHILD_H
 
-//#include <stdio.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include "Config.h"
-#include "Parent.h"
-#include "Child.h"
 
 
 /*
@@ -41,16 +40,10 @@
  */
 
 
-int pWordCount(int  argc,
-               char *argv[]);
+int child(int  to_parent_pipe[],
+          int  from_parent_pipe[],
+          char write_msg[],
+          char read_msg[]);
 
-/*
-void PWordCount();
-char* getString();
-
-#ifdef _PWORD_COUNT_C
-static char output[150];
-#endif
-*/
 
 #endif

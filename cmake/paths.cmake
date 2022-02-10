@@ -15,3 +15,4 @@ set(PWORD_COUNT_DIR   ${TOP_LEVEL_DIR}/pwordcount)
 set(GOOGLETEST_DIR    ${EXTERNAL_DEPS_DIR}/googletest)
 
 set(PARENT_DIR        ${PWORD_COUNT_DIR}/Parent)
+set(CHILD_DIR        ${PWORD_COUNT_DIR}/Child)
