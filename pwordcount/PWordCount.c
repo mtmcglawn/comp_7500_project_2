@@ -36,7 +36,16 @@ int pWordCount(int argc, char *argv[])
   int ret_val = 0;
   if (argc == 2)
   {
-    ret_val = pipelining(argv[1]);
+    FILE *input_file = fopen(argv[1], "r");
+    if (!input_file)
+    {
+      fprintf(stderr, "Can not open file %s\n", argv[1]);
+      ret_val = 1;
+    }
+    else
+    {
+      ret_val = pipelining(argv[1]);
+    }
   }
   else
   {

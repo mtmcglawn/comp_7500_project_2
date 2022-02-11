@@ -39,22 +39,14 @@ int parent(char *file_name,
 {
   FILE *input_file = fopen(file_name, "r");
   fprintf(stdout, "Process 1 is reading file \"%s\" now...\n", file_name);
-  if (!input_file)
-  {
-    fprintf(stderr, "Can not open file\n");
-    return 1;
-  }
-  else
-  {
-    sendDataToChild(input_file,
-                    to_child_pipe,
-                    write_msg);
-    fclose(input_file);
-    wait(NULL);
-    readDataFromChild(from_child_pipe,
-                      read_msg);
-    return 0;
-  }
+  sendDataToChild(input_file,
+                  to_child_pipe,
+                  write_msg);
+  fclose(input_file);
+  wait(NULL);
+  readDataFromChild(from_child_pipe,
+                    read_msg);
+  return 0;
 }
 
 

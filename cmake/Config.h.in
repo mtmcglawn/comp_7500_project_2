@@ -6,3 +6,5 @@
 #define MAX_BUFFER_SIZE 1000
 #define READ_END 0
 #define WRITE_END 1
+#define PARENT_DIR "@PARENT_DIR@"
+#define PIPELINING_DIR "@PIPELINING_DIR@"

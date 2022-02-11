@@ -67,4 +67,5 @@ int pipelining(char file_name[])
         child_write_msg,
         parent_read_msg);
   }
+  return ret_val;
 }

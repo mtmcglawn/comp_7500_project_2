@@ -6,84 +6,217 @@ extern "C" {
 
 using namespace std;
 
-/*
-struct PWordCountEmptyInputTest : public testing::Test {
-  int inputCount;
-  char* input[MAX_BUFFER_SIZE];
-  void SetUp() {
-    inputCount = 0;
-  }
-  void TearDown() {}
-};
-
-struct DISABLED_PWordCountOneInputFileDoesNotExistTest : public testing::Test {
-  int inputCount;
-  char* input[MAX_BUFFER_SIZE];
-  void SetUp() {
-    inputCount = 1;
-    char hello[] = "Hello";
-    input[0] = hello;
-  }
-  void TearDown() {}
-};
-
-struct DISABLED_PWordCountOneInputFileDoesExistTest : public testing::Test {
-  int inputCount;
-  char* input[MAX_BUFFER_SIZE];
-  void SetUp() {
-    inputCount = 1;
-    char hello[] = "Hello";
-    input[0] = hello;
-  }
-  void TearDown() {}
-};
-
-struct DISABLED_PWordCountTwoInputTest : public testing::Test {
-  int inputCount;
-  char* input[MAX_BUFFER_SIZE];
-  void SetUp() {
-    inputCount = 2;
-    char hello[] = "Hello";
-    char world[] = "World";
-    input[0] = hello;
-    input[1] = world;
-  }
-  void TearDown() {}
-};
-*/
-
-TEST(Child, DoesAssertWork){
+TEST(Child, DoesAssertWork)
+{
   ASSERT_TRUE(1 == 1);
 }
 
-/*
-TEST_F(PWordCountEmptyInputTest, PWordCountReturnsInt){
-  testing::internal::CaptureStdout();
-  ASSERT_EQ(typeid(pWordCount(inputCount, input)), typeid(int));
-  std::string output = testing::internal::GetCapturedStdout();
+
+struct ChildTest : public testing::Test
+{
+  int to_pipe[2];
+  int from_pipe[2];
+  char write_msg[MAX_BUFFER_SIZE];
+  char read_msg[MAX_BUFFER_SIZE];
+  pid_t pid;
+  void SetUp()
+  {
+    if (pipe(to_pipe) == -1) 
+    {
+      fprintf(stderr, "To Pipe creation failed");
+    }
+    if (pipe(from_pipe) == -1) 
+    {
+      fprintf(stderr, "From Pipe creation failed");
+    }
+    pid = fork();
+    if (pid < 0)
+    {
+      fprintf(stderr, "Fork creation failed");
+    }
+  }
+  void TearDown() {}
+};
+
+TEST_F(ChildTest, childReturnsInt)
+{
+  if (pid > 0)
+  {
+    char message[] = "This is four words";
+    for (size_t index = 0; index < strlen(message); index++)
+    {
+      read_msg[index] = message[index];
+    }
+    close(from_pipe[READ_END]);
+    write(from_pipe[WRITE_END], read_msg, strlen(read_msg) + 1);
+    close(from_pipe[WRITE_END]);
+    wait(nullptr);
+    int message_size = 0;
+    close(to_pipe[WRITE_END]);
+    while ((message_size = read(to_pipe[READ_END], write_msg, MAX_BUFFER_SIZE)) > 0){}
+    close(to_pipe[READ_END]);
+    wait(nullptr);
+  }
+  else
+  {
+    testing::internal::CaptureStdout();
+    ASSERT_EQ(typeid(child(to_pipe, from_pipe, write_msg, read_msg)), typeid(int));
+    std::string output = testing::internal::GetCapturedStdout();
+  }
 }
 
-TEST_F(PWordCountEmptyInputTest, PWordCountEmptyInputReturnsZero){
-  testing::internal::CaptureStdout();
-  ASSERT_EQ(pWordCount(inputCount, input), 1);
-  std::string output = testing::internal::GetCapturedStdout();
+TEST_F(ChildTest, childReturnsExpectedInt)
+{
+  if (pid > 0)
+  {
+    char message[] = "This is four words";
+    for (size_t index = 0; index < strlen(message); index++)
+    {
+      read_msg[index] = message[index];
+    }
+    close(from_pipe[READ_END]);
+    write(from_pipe[WRITE_END], read_msg, strlen(read_msg) + 1);
+    close(from_pipe[WRITE_END]);
+    wait(nullptr);
+    int message_size = 0;
+    close(to_pipe[WRITE_END]);
+    while ((message_size = read(to_pipe[READ_END], write_msg, MAX_BUFFER_SIZE)) > 0){}
+    close(to_pipe[READ_END]);
+    wait(nullptr);
+  }
+  else
+  {
+    testing::internal::CaptureStdout();
+    ASSERT_EQ(child(to_pipe, from_pipe, write_msg, read_msg), 4);
+    std::string output = testing::internal::GetCapturedStdout();
+  }
 }
 
-TEST_F(DISABLED_PWordCountOneInputFileDoesNotExistTest, PWordCountEmptyInputReturnsZero){
-  ASSERT_EQ(pWordCount(inputCount, input), 1);
+
+struct ChildReceiveDataTest : public testing::Test
+{
+  int from_pipe[2];
+  char read_msg[MAX_BUFFER_SIZE];
+  pid_t pid;
+  void SetUp()
+  {
+    if (pipe(from_pipe) == -1) 
+    {
+      fprintf(stderr, "Pipe creation failed");
+    }
+    pid = fork();
+    if (pid < 0)
+    {
+      fprintf(stderr, "Fork creation failed");
+    }
+  }
+  void TearDown() {}
+};
+
+TEST_F(ChildReceiveDataTest, receiveDataReturnsInt)
+{
+  if (pid > 0)
+  {
+    char message[] = "This is four words";
+    for (size_t index = 0; index < strlen(message); index++)
+    {
+      read_msg[index] = message[index];
+    }
+    close(from_pipe[READ_END]);
+    write(from_pipe[WRITE_END], read_msg, strlen(read_msg) + 1);
+    close(from_pipe[WRITE_END]);
+    wait(nullptr);
+  }
+  else
+  {
+    testing::internal::CaptureStdout();
+    ASSERT_EQ(typeid(receiveDataFromParent(from_pipe, read_msg)), typeid(int));
+    std::string output = testing::internal::GetCapturedStdout();
+  }
 }
 
-TEST_F(DISABLED_PWordCountOneInputFileDoesExistTest, PWordCountEmptyInputReturnsZero){
-  ASSERT_EQ(pWordCount(inputCount, input), 0);
+TEST_F(ChildReceiveDataTest, receiveDataReturnsExpectedInt)
+{
+  if (pid > 0)
+  {
+    char message[] = "This is four words";
+    for (size_t index = 0; index < strlen(message); index++)
+    {
+      read_msg[index] = message[index];
+    }
+    close(from_pipe[READ_END]);
+    write(from_pipe[WRITE_END], read_msg, strlen(read_msg) + 1);
+    close(from_pipe[WRITE_END]);
+    wait(nullptr);
+  }
+  else
+  {
+    testing::internal::CaptureStdout();
+    ASSERT_EQ(receiveDataFromParent(from_pipe, read_msg), 4);
+    std::string output = testing::internal::GetCapturedStdout();
+  }
 }
 
-TEST_F(DISABLED_PWordCountTwoInputTest, PWordCountEmptyInputReturnsZero){
-  ASSERT_EQ(pWordCount(inputCount, input), 0);
+
+struct ChildSendDataTest : public testing::Test
+{
+  int to_pipe[2];
+  char write_msg[MAX_BUFFER_SIZE];
+  pid_t pid;
+  void SetUp()
+  {
+    if (pipe(to_pipe) == -1) 
+    {
+      fprintf(stderr, "Pipe creation failed");
+    }
+    pid = fork();
+    if (pid < 0)
+    {
+      fprintf(stderr, "Fork creation failed");
+    }
+  }
+  void TearDown() {}
+};
+
+TEST_F(ChildSendDataTest, sendDataReturnsCharStar)
+{
+  if (pid > 0)
+  {
+    int message_size = 0;
+    close(to_pipe[WRITE_END]);
+    while ((message_size = read(to_pipe[READ_END], write_msg, MAX_BUFFER_SIZE)) > 0){}
+    close(to_pipe[READ_END]);
+    wait(nullptr);
+  }
+  else
+  {
+    testing::internal::CaptureStdout();
+    ASSERT_EQ(typeid(sendDataToParent(to_pipe, write_msg, 1)), typeid(char*));
+    std::string output = testing::internal::GetCapturedStdout();
+  }
 }
-*/
+
+TEST_F(ChildSendDataTest, sendDataReturnsExpectedCharStar)
+{
+  if (pid > 0)
+  {
+    int message_size = 0;
+    close(to_pipe[WRITE_END]);
+    while ((message_size = read(to_pipe[READ_END], write_msg, MAX_BUFFER_SIZE)) > 0){}
+    close(to_pipe[READ_END]);
+    wait(nullptr);
+  }
+  else
+  {
+    testing::internal::CaptureStdout();
+    ASSERT_EQ(sendDataToParent(to_pipe, write_msg, 1), "1");
+    std::string output = testing::internal::GetCapturedStdout();
+  }
+}
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
   testing::InitGoogleTest(&argc, argv);
 
