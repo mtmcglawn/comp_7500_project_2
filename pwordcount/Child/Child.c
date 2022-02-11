@@ -35,10 +35,23 @@ int child(int  to_parent_pipe[],
           char write_msg[],
           char read_msg[])
 {
+  int words = receiveDataFromParent(from_parent_pipe,
+                                    read_msg);
+  fprintf(stdout, "Process 2 is counting words now...\n");
+  sendDataToParent(to_parent_pipe,
+                   write_msg,
+                   words);
+  return words;
+}
+
+
+int receiveDataFromParent(int  from_pipe[],
+                           char read_msg[])
+{
   int parent_message_size = 0;
-  close(from_parent_pipe[WRITE_END]);
-  int words = 0;
-  while ((parent_message_size = read(from_parent_pipe[READ_END], read_msg, MAX_BUFFER_SIZE)) > 0)
+  close(from_pipe[WRITE_END]);
+  int word_count = 0;
+  while ((parent_message_size = read(from_pipe[READ_END], read_msg, MAX_BUFFER_SIZE)) > 0)
   {
     bool isLetter = false;
     for (int child_buffer_index = 0; child_buffer_index < MAX_BUFFER_SIZE; child_buffer_index++)
@@ -51,23 +64,32 @@ int child(int  to_parent_pipe[],
       {
         if (!isLetter)
         {
-          words++;
+          word_count++;
         }
         isLetter = true;
       }
     }
   }
-  close(from_parent_pipe[READ_END]);
+  close(from_pipe[READ_END]);
   fprintf(stdout, "Process 2 finishes receiving data from Process 1...\n");
-  fprintf(stdout, "Process 2 is counting words now...\n");
-  char words_as_string[MAX_BUFFER_SIZE];
-  sprintf(words_as_string, "%d", words);
-  close(to_parent_pipe[READ_END]);
+  return word_count;
+}
+
+
+char* sendDataToParent(int  to_pipe[],
+                      char write_msg[],
+                      int  word_count)
+{
+  char word_count_as_string[MAX_BUFFER_SIZE];
+  sprintf(word_count_as_string, "%d", word_count);
+  close(to_pipe[READ_END]);
   fprintf(stdout, "Process 2 is sending the result back to Process 1...\n");
-  for (int child_send_buffer_index = 0; child_send_buffer_index < strlen(words_as_string); child_send_buffer_index++)
+  for (int child_send_buffer_index = 0; child_send_buffer_index < strlen(word_count_as_string); child_send_buffer_index++)
   {
-    write_msg[child_send_buffer_index] = words_as_string[child_send_buffer_index];
+    write_msg[child_send_buffer_index] = word_count_as_string[child_send_buffer_index];
   }
-  write(to_parent_pipe[WRITE_END], write_msg, strlen(write_msg) + 1);
-  close(to_parent_pipe[WRITE_END]);
+  write(to_pipe[WRITE_END], write_msg, strlen(write_msg) + 1);
+  close(to_pipe[WRITE_END]);
+  char *return_string = word_count_as_string;
+  return return_string;
 }

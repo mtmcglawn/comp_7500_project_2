@@ -46,30 +46,49 @@ int parent(char *file_name,
   }
   else
   {
-    int parent_send_buffer_index = 0;
-    fprintf(stdout, "Process 1 starts sending data to Process 2...\n");
-    close(to_child_pipe[READ_END]);
-    while ((write_msg[parent_send_buffer_index] = fgetc(input_file)) != EOF)
-    {
-      if (parent_send_buffer_index == MAX_BUFFER_SIZE - 2)
-      {
-        write(to_child_pipe[WRITE_END], write_msg, strlen(write_msg) + 1);
-        memset(write_msg, 0, sizeof &write_msg);
-        parent_send_buffer_index = -1;
-      }
-      parent_send_buffer_index++;
-    }
-    write_msg[parent_send_buffer_index] = '\0';
-    write(to_child_pipe[WRITE_END], write_msg, parent_send_buffer_index + 1);
-    close(to_child_pipe[WRITE_END]);
+    sendDataToChild(input_file,
+                    to_child_pipe,
+                    write_msg);
     fclose(input_file);
     wait(NULL);
-    close(from_child_pipe[WRITE_END]);
-    int child_message_size = 0;
-    while ((child_message_size = read(from_child_pipe[READ_END], read_msg, MAX_BUFFER_SIZE)) > 0)
-    {
-      fprintf(stdout, "Process 1: The total number of words is %s\n", read_msg);
-    }
-    close(from_child_pipe[READ_END]);
+    readDataFromChild(from_child_pipe,
+                      read_msg);
+    return 0;
   }
+}
+
+
+void sendDataToChild(FILE *file,
+                     int  to_pipe[],
+                     char write_msg[])
+{
+  int parent_send_buffer_index = 0;
+  fprintf(stdout, "Process 1 starts sending data to Process 2...\n");
+  close(to_pipe[READ_END]);
+  while ((write_msg[parent_send_buffer_index] = fgetc(file)) != EOF)
+  {
+    if (parent_send_buffer_index == MAX_BUFFER_SIZE - 2)
+    {
+      write(to_pipe[WRITE_END], write_msg, strlen(write_msg) + 1);
+      memset(write_msg, 0, sizeof &write_msg);
+      parent_send_buffer_index = -1;
+    }
+    parent_send_buffer_index++;
+  }
+  write_msg[parent_send_buffer_index] = '\0';
+  write(to_pipe[WRITE_END], write_msg, parent_send_buffer_index + 1);
+  close(to_pipe[WRITE_END]);
+}
+
+
+void readDataFromChild(int  from_pipe[],
+                       char read_msg[])
+{
+  close(from_pipe[WRITE_END]);
+  int child_message_size = 0;
+  while ((child_message_size = read(from_pipe[READ_END], read_msg, MAX_BUFFER_SIZE)) > 0)
+  {
+    fprintf(stdout, "Process 1: The total number of words is %s\n", read_msg);
+  }
+  close(from_pipe[READ_END]);
 }

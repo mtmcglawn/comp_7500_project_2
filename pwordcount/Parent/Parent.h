@@ -45,4 +45,13 @@ int parent(char *file_name,
            char read_msg[]);
 
 
+void sendDataToChild(FILE *file,
+                     int  to_pipe[],
+                     char write_msg[]);
+
+
+void readDataFromChild(int  from_pipe[],
+                       char read_msg[]);
+
+
 #endif

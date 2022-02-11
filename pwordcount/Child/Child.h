@@ -46,4 +46,13 @@ int child(int  to_parent_pipe[],
           char read_msg[]);
 
 
+int receiveDataFromParent(int  from_pipe[],
+                          char read_msg[]);
+
+
+char* sendDataToParent(int  to_pipe[],
+                      char write_msg[],
+                      int  word_count);
+
+
 #endif
