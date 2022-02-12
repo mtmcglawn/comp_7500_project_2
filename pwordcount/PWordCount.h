@@ -30,6 +30,13 @@
  * First build, then either:
  * 1. $ cd build && ctest
  * 2. $ ./build.sh test
+ *
+ *
+ * USE
+ *
+ * To run the program you can either:
+ * 1: $ ./build/pwordcount/pwordcount <file_name>
+ * 2: $ cd ./build/pwordcount/ && ./pwordcount <file_name>
  */
 
 
