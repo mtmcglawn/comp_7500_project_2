@@ -62,3 +62,6 @@ cmake/Config.h
 
 # Vim session
 pwordcount.vim
+
+# Project report PDF
+project_2_mtm0002.pdf
